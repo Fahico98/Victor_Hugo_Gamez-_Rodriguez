@@ -5,6 +5,7 @@ var currentPage                  = 1;
 var searchInput                  = $("#searchInput");
 var searchButtonDropdown         = $("#searchButtonDropdown");
 var idToEdit                     = 0;
+var nameToEdit                   = "";
 var changeButtonDropdown         = $("#changeButtonDropdown");
 var changeAmountForm             = $("#changeAmountForm");
 var changeAmountHelp             = $("#changeAmountHelp");
@@ -54,12 +55,14 @@ $(document).ready(function(){
    $("th").addClass("align-middle");
    newProductForm.on("submit", function(event){
       event.preventDefault();
-      if(validateProductExists(productName.val())){
+      var productNameValidated = validateProductExists(productName.val());
       var productFomrValidated = validateNewProductForm();
       var productAmountValidated = validateProductAmount();
-         if(productAmountValidated && productFomrValidated){
-            var formData = new FormData(this);
-            if(modalWindowTitle.text() === "Editar información de producto"){
+      if(productAmountValidated && productFomrValidated){
+         var formData = new FormData(this);
+         if(modalWindowTitle.text() === "Editar información de producto"){
+            console.log(nameToEdit);
+            if(productName.val() === nameToEdit || (productName.val() !== nameToEdit && productNameValidated)){
                formData.append("id", idToEdit);
                $.ajax({
                   type: "POST",
@@ -73,21 +76,21 @@ $(document).ready(function(){
                      loadDatabase(1);
                   }
                });
-            }else if(modalWindowTitle.text() === "Agregar nuevo producto"){
-               
-                  $.ajax({
-                     type: "POST",
-                     url: "php/addNewProduct.php",
-                     data: formData,
-                     contentType: false,
-                     cache: false,
-                     processData: false,
-                     success: function(){
-                        cancelButton.trigger("click");
-                        loadDatabase(1);
-                     }
-                  });
-               
+            }
+         }else if(modalWindowTitle.text() === "Agregar nuevo producto"){
+            if(productNameValidated){
+               $.ajax({
+                  type: "POST",
+                  url: "php/addNewProduct.php",
+                  data: formData,
+                  contentType: false,
+                  cache: false,
+                  processData: false,
+                  success: function(){
+                     cancelButton.trigger("click");
+                     loadDatabase(1);
+                  }
+               });
             }
          }
       }else{
@@ -347,6 +350,9 @@ function getProductData(id){
    var productData = consultProduct(id);
    var i = 0;
    for(var [key, input] of Object.entries(inputArray)){
+      if(input == productName){
+         nameToEdit = productData[i].trim();
+      }
       input.val(productData[i]);
       i++;
    }
