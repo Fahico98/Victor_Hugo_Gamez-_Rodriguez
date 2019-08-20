@@ -1,0 +1,20 @@
+
+.helpText{
+   color: red;
+}
+
+.idCell{
+   width: 3%;
+}
+
+.amountCell{
+   width: 5%;
+}
+
+.deleteButton, .editButton, .changeButton, .changeOption, .searchOption{
+   cursor: pointer;
+}
+
+table{
+   font-size: 14px;
+}
