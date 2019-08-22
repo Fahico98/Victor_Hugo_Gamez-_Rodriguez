@@ -1,4 +1,5 @@
 
+var storesNumber                 = 5;
 var parameterGlobal              = "";
 var parameterValGlobal           = "";
 var currentPage                  = 1;
@@ -40,9 +41,9 @@ var inputArray = {
       "productName" : productName, 
       "brand" : brand,
       "seriesNumber" : seriesNumber,
-      "amount" : amount,
       "amountMax" : amountMax,
       "amountMin" : amountMin,
+      "amount" : amount,
       "store" : store,
       "rack" : rack,
       "level" : level,
@@ -55,54 +56,46 @@ $(document).ready(function(){
    $("th").addClass("align-middle");
    newProductForm.on("submit", function(event){
       event.preventDefault();
-      var productNameValidated = validateProductExists(productName.val());
-      var productFomrValidated = validateNewProductForm();
-      var productAmountValidated = validateProductAmount();
-      if(productAmountValidated && productFomrValidated){
+      if(validate()){
          var formData = new FormData(this);
          if(modalWindowTitle.text() === "Editar información de producto"){
-            console.log(nameToEdit);
-            if(productName.val() === nameToEdit || (productName.val() !== nameToEdit && productNameValidated)){
-               formData.append("id", idToEdit);
-               $.ajax({
-                  type: "POST",
-                  url: "php/updateProduct.php",
-                  data: formData,
-                  contentType: false,
-                  cache: false,
-                  processData: false,
-                  success: function(response){
-                     cancelButton.trigger("click");
-                     loadDatabase(1);
-                  }
-               });
-            }
+            formData.append("id", idToEdit);
+            $.ajax({
+               type: "POST",
+               url: "php/updateProduct.php",
+               data: formData,
+               contentType: false,
+               cache: false,
+               processData: false,
+               success: function(){
+                  cancelButton.trigger("click");
+                  loadDatabase(1);
+               }
+            });
          }else if(modalWindowTitle.text() === "Agregar nuevo producto"){
-            if(productNameValidated){
-               $.ajax({
-                  type: "POST",
-                  url: "php/addNewProduct.php",
-                  data: formData,
-                  contentType: false,
-                  cache: false,
-                  processData: false,
-                  success: function(){
-                     cancelButton.trigger("click");
-                     loadDatabase(1);
-                  }
-               });
-            }
+            $.ajax({
+               type: "POST",
+               url: "php/addNewProduct.php",
+               data: formData,
+               contentType: false,
+               cache: false,
+               processData: false,
+               success: function(){
+                  cancelButton.trigger("click");
+                  loadDatabase(1);
+               }
+            });
          }
-      }else{
-         $("#productNameHelp").text("El nombre del producto que desea ingresar ya existe...");
       }
    });
    productName.keyup(function(){
       if($(this).val() != ""){
-         if(!validateProductExists($(this).val())){
-            $("#productNameHelp").text("El nombre del producto que desea ingresar ya existe...");
-         }else{
+         var valid = validateProductExists();
+         console.log(valid);
+         if(valid){
             $("#productNameHelp").text("");
+         }else{
+            $("#productNameHelp").text("El nombre del producto que desea ingresar ya existe...");
          }
       }
    });
@@ -187,55 +180,91 @@ $(document).ready(function(){
    });
 });
 
-function validateNewProductForm(){
-   var output = true;
-   for(var [key, input] of Object.entries(inputArray)){
-      var type = input.attr("type");
-      var value = input.val();
-      if(type === "text"){
-         if(value === ""){
-            $("#" + key + "Help").text("Este campo no puede estar vacío...");
-            output = false;
-         }else{
-            $("#" + key + "Help").text("");
-         }
-      }else if(type === "number"){
-         if(value === "" || value === 0){
-            $("#" + key + "Help").text("Este campo no puede estar vacio y su valor debe ser mayor a cero...");
-            output = false;
-         }else{
-            $("#" + key + "Help").text("");
-         }
-      }
-   };
-   return output;
+function validateProductAmount(){
+   if(validateProductAmountLimits()){
+      var amountVal = parseInt(amount.val(), 10);
+      var amountMaxVal = parseInt(amountMax.val(), 10);
+      var amountMinVal = parseInt(amountMin.val(), 10);
+      return(amountVal > amountMinVal && amountVal < amountMaxVal);
+   }else{
+      return(true);
+   }
 }
 
-function validateProductAmount(){
-   var output = true;
-   var amountVal = parseInt(amount.val(), 10);
+function validateProductAmountLimits(){
    var amountMaxVal = parseInt(amountMax.val(), 10);
    var amountMinVal = parseInt(amountMin.val(), 10);
-   if(amountVal < amountMinVal || amountVal > amountMaxVal){
-      $("#amountHelp").text("La cantidad inicial de productos debe estar dentro de los limites de cantidad establecidos...");
-      output = false;
+   return(amountMinVal > 0 && amountMaxVal > 0);
+}
+
+function validateProductExists(){
+   var output;
+   if(productName.val() === nameToEdit){
+      output = true;
+   }else{
+      $.ajax({
+         type: "POST",
+         url: "php/validateProductExists.php",
+         data: {productName: productName.val()},
+         async: false,
+         success: function(response){
+            if(parseInt(response, 10) === 0){
+               output = true;
+            }else{
+               output = false;
+            }
+         }
+      });
    }
    return(output);
 }
 
-function validateProductExists(productName){
+function validateStore(){
+   var storeVal = parseInt(store.val(), 10);
+   return(storeVal > 0 && storeVal <= storesNumber);
+}
+
+function validate(){
    var output = true;
-   $.ajax({
-      type: "POST",
-      url: "php/validateProductExists.php",
-      data: {productName: productName},
-      async: false,
-      success: function(response){
-         if(parseInt(response, 10) !== 0){
+   for(var [key, input] of Object.entries(inputArray)){
+      if(input === productName){
+         if(validateProductExists()){
+            $("#productNameHelp").text("");
+         }else{
+            $("#productNameHelp").text("El nombre del producto que desea ingresar ya existe...");
+            output = false;
+         }
+      }else if(input === amount){
+         if(validateProductAmount()){
+            $("#amountHelp").text("");
+         }else{
+            $("#amountHelp").text("La cantidad inicial de producto ingresada debe ester dentro de los límites establecidos...");
+            output = false;
+         }
+      }else if(input === store){
+         if(validateStore()){
+            $("#storeHelp").text("");
+         }else{
+            $("#storeHelp").text("Solo hay " + storesNumber + " almacenes...");
             output = false;
          }
       }
-   });
+      if(input.attr("type") === "number"){
+         if(input.val() === "" || parseInt(input.val(), 10) <= 0){
+            $("#" + key + "Help").text("Este campo no puede estar vacio y su valor debe ser mayor a cero...");
+            output = false;
+         }else if($("#" + key + "Help").text() === "Este campo no puede estar vacio y su valor debe ser mayor a cero..."){
+            $("#" + key + "Help").text("");
+         }
+      }else{
+         if(input.val() === ""){
+            $("#" + key + "Help").text("Este campo no puede estar vacío...");
+            output = false;
+         }else if($("#" + key + "Help").text() === "Este campo no puede estar vacío..."){
+            $("#" + key + "Help").text("");
+         }
+      }
+   }
    return(output);
 }
 
@@ -244,7 +273,7 @@ function makeChange(){
    var operation = changeButtonDropdown.text();
    var amountTemp = 0;
    var validated = false;
-   if(amountToOperate.val() !== ""){
+   if(amountToOperateVal > 0){
       if(operation === "Entrada"){
          amountTemp = parseInt(amountGlobal, 10) + amountToOperateVal;
          if(amountTemp > amountMaxGlobal){
@@ -275,7 +304,7 @@ function makeChange(){
                currentAmount: parseInt(amountGlobal, 10),
                amountToOperate: amountToOperateVal
          },
-         success: function(response){
+         success: function(){
             cancelChangingButton.trigger("click");
             resetChangeProductForm();
             loadDatabase(1);

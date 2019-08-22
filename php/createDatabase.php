@@ -16,14 +16,14 @@ function createDatabase(){
             id                      INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
             nombre_producto         VARCHAR(100) NOT NULL UNIQUE,
             marca                   VARCHAR(100) NOT NULL,
-            numero_de_serie         INT NOT NULL UNIQUE,
+            numero_de_serie         VARCHAR(50) NOT NULL UNIQUE,
             cantidad                INT,
             maximo                  INT,
             minimo                  INT,
             almacen                 INT,
-            gabeta_o_rack           VARCHAR(100),
-            nivel                   VARCHAR(100),
-            ubicacion               INT
+            gabeta_o_rack           VARCHAR(50),
+            nivel                   VARCHAR(50),
+            ubicacion               VARCHAR(50)
          )";
       $pdo->query($query);
       $pdo = null;

@@ -75,7 +75,7 @@
                            </div>
                            <div class="form-group input-group-sm">
                               <label for="seriesNumber">Número de serie</label>
-                              <input type="number" class="form-control" name="seriesNumber" id="seriesNumber" aria-describedby="seriesNumberHelp"
+                              <input type="text" class="form-control" name="seriesNumber" id="seriesNumber" aria-describedby="seriesNumberHelp"
                                  placeholder="Número de serie">
                               <small id="seriesNumberHelp" class="helpText mb-0 pb-0"></small>
                            </div>
@@ -89,14 +89,14 @@
                               <label for="amount">Limites de cantidad</label>
                               <div class="row">
                                  <div class="col-6 pl-3 pr-1 input-group-sm">
-                                    <input type="number" class="form-control" name="amountMax" id="amountMax" aria-describedby="amountMaxHelp"
-                                       placeholder="Cantidad máxima">
-                                    <small id="amountMaxHelp" class="helpText mb-0 pb-0"></small>
-                                 </div>
-                                 <div class="col-6 pl-1 pr-3 input-group-sm">
                                     <input type="number" class="form-control" name="amountMin" id="amountMin" aria-describedby="amountMinHelp" 
                                        placeholder="Cantidad mínima">
                                     <small id="amountMinHelp" class="helpText mb-0 pb-0"></small>
+                                 </div>
+                                 <div class="col-6 pl-1 pr-3 input-group-sm">
+                                    <input type="number" class="form-control" name="amountMax" id="amountMax" aria-describedby="amountMaxHelp"
+                                       placeholder="Cantidad máxima">
+                                    <small id="amountMaxHelp" class="helpText mb-0 pb-0"></small>
                                  </div>
                               </div>
                            </div>
@@ -119,7 +119,7 @@
                            </div>
                            <div class="form-group input-group-sm">
                               <label for="productLocation">Ubicacion</label>
-                              <input type="number" class="form-control" name="productLocation" id="productLocation"
+                              <input type="text" class="form-control" name="productLocation" id="productLocation"
                                  aria-describedby="productLocationHelp" placeholder="Ubicación">
                               <small id="productLocationHelp" class="helpText mb-0 pb-0"></small>
                            </div>
