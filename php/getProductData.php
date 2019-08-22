@@ -17,9 +17,9 @@
          $row["nombre_producto"]    . "{}" .
          $row["marca"]              . "{}" .
          $row["numero_de_serie"]    . "{}" .
-         $row["cantidad"]           . "{}" .
          $row["maximo"]             . "{}" .
          $row["minimo"]             . "{}" .
+         $row["cantidad"]           . "{}" .
          $row["almacen"]            . "{}" .
          $row["gabeta_o_rack"]      . "{}" .
          $row["nivel"]              . "{}" .

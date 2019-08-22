@@ -91,7 +91,6 @@ $(document).ready(function(){
    productName.keyup(function(){
       if($(this).val() != ""){
          var valid = validateProductExists();
-         console.log(valid);
          if(valid){
             $("#productNameHelp").text("");
          }else{
